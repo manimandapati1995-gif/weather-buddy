@@ -1,0 +1,10 @@
+body{font-family: Arial; background:#e0f2ff; margin:0; padding:20px;}
+.container{max-width:500px; margin:auto; background:white; padding:20px; border-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1);}
+.search-box{display:flex; gap:10px;}
+.search-box input{flex:1; padding:12px; border-radius:8px; border:1px solid #ccc;}
+.search-box button{padding:12px 20px; background:#0077ff; color:white; border:none; border-radius:8px; cursor:pointer;}
+.result-card{text-align:center; background:#f0f8ff; margin-top:20px; padding:15px; border-radius:12px; border:2px dashed #0077ff;}
+.suggestion{background:yellow; padding:10px; border-radius:8px;}
+.error{color:red;}
+.history-item{display:flex; justify-content:space-between; background:#f9f9f9; padding:8px; margin:5px 0; border-radius:6px;}
+.del{background:red; color:white; border:none; border-radius:50%; cursor:pointer;}

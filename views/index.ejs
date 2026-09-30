@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Weather Buddy - Vizag</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Weather Buddy ☔</h1>
+    <p>Should I carry umbrella today?</p>
+
+    <form action="/weather" method="POST" class="search-box">
+      <input type="text" name="city" placeholder="Enter city like Visakhapatnam" required>
+      <button type="submit">Check</button>
+    </form>
+
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+
+    <% if (weather) { %>
+      <div class="result-card">
+        <h2><%= weather.name %> - <%= weather.main.temp %>°C</h2>
+        <p><%= weather.weather[0].main %> (<%= weather.weather[0].description %>)</p>
+        <img src="http://openweathermap.org/img/wn/<%= weather.weather[0].icon %>@4x.png">
+        <h3 class="suggestion"><%= suggestion %></h3>
+        <p>Humidity: <%= weather.main.humidity %>% | Wind: <%= weather.wind.speed %> m/s</p>
+      </div>
+    <% } %>
+
+    <h3>Recent Searches</h3>
+    <div class="history">
+      <% history.forEach(h => { %>
+        <div class="history-item">
+          <span><b><%= h.city %></b> - <%= h.temp %>°C - <%= h.weather_main %></span>
+          <form action="/delete/<%= h.id %>" method="POST"><button class="del">x</button></form>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</body>
+</html>
