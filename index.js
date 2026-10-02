@@ -36,22 +36,33 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/weather", async (req, res) => {
-  const city = req.body.city;
+  let city = req.body.city;
+  const cityMap={"vizag": "Visakhapatnam", "hyd": "Hyderabad"};
+  if(cityMap[city.toLowerCase()]) city=cityMap[city.toLowerCase()]
   try {
+    const API_KEY = process.env.API_KEY || process.env.OPENWEATHER_API_KEY || "17d7628cd05a876ca3eee154c777b573";
     const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`);
     const data = response.data;
     const weatherMain = data.weather[0].main;
     const temp = data.main.temp;
     const suggestion = getSuggestion(weatherMain, temp, data.name);
 
-    await db.query("INSERT INTO weather_history (city, temp, weather_main, suggestion) VALUES ($1,$2,$3,$4)", [data.name, temp, weatherMain, suggestion]);
+    try {
+      await db.query("INSERT INTO weather_history (city, temp, weather_main, suggestion) VALUES ($1,$2,$3,$4)", [data.name, temp, weatherMain, suggestion]);
+    } catch(dbErr){
+      console.log("DB save failed, but will show weather:", dbErr.message);
+    }
 
-    const history = await db.query("SELECT * FROM weather_history ORDER BY searched_at DESC LIMIT 6");
+    const history = await db.query("SELECT * FROM weather_history ORDER BY searched_at DESC LIMIT 10");
     res.render("index", { weather: data, suggestion: suggestion, history: history.rows, error: null });
-
   } catch (err) {
-    const history = await db.query("SELECT * FROM weather_history ORDER BY searched_at DESC LIMIT 6");
-    res.render("index", { weather: null, suggestion: null, history: history.rows, error: "City not found! Try Vizag, Hyderabad, Delhi" });
+    console.log("Weather error:", err.message);
+    try {
+      const history = await db.query("SELECT * FROM weather_history ORDER BY searched_at DESC LIMIT 10");
+      res.render("index", { weather: null, suggestion: null, history: history.rows, error: "City not found!" });
+    } catch(e){
+      res.render("index", { weather: null, suggestion: null, history: [], error: "City not found!" });
+    }
   }
 });
 
